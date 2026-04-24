@@ -9,11 +9,12 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * Class User
- * 
- * @property int $id
+ * * @property int $id
  * @property int $department_id
  * @property string $name
  * @property string $password
@@ -24,8 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $role
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
- * @property Department $department
+ * * @property Department $department
  * @property Collection|SystemLog[] $system_logs
  * @property Collection|TicketLog[] $ticket_logs
  * @property Collection|TicketMessage[] $ticket_messages
@@ -33,54 +33,55 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-class User extends Model
+class User extends Authenticatable
 {
-	protected $table = 'users';
+    use Notifiable;
 
-	protected $casts = [
-		'department_id' => 'int',
-		'email_verified_at' => 'datetime',
-		'is_active' => 'bool'
-	];
+    protected $table = 'users';
 
-	protected $hidden = [
-		'password',
-		'remember_token'
-	];
+    protected $casts = [
+        'department_id' => 'int',
+        'email_verified_at' => 'datetime',
+        'is_active' => 'bool',
+        'password' => 'hashed',
+    ];
 
-	protected $fillable = [
-		'department_id',
-		'name',
-		'password',
-		'email',
-		'email_verified_at',
-		'is_active',
-		'remember_token',
-		'role'
-	];
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
 
-	public function department()
-	{
-		return $this->belongsTo(Department::class);
-	}
+    protected $fillable = [
+        'department_id',
+        'name',
+        'password',
+        'email',
+        'is_active',
+        'role'
+    ];
 
-	public function system_logs()
-	{
-		return $this->hasMany(SystemLog::class);
-	}
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
-	public function ticket_logs()
-	{
-		return $this->hasMany(TicketLog::class);
-	}
+    public function system_logs()
+    {
+        return $this->hasMany(SystemLog::class);
+    }
 
-	public function ticket_messages()
-	{
-		return $this->hasMany(TicketMessage::class);
-	}
+    public function ticket_logs()
+    {
+        return $this->hasMany(TicketLog::class);
+    }
 
-	public function tickets()
-	{
-		return $this->hasMany(Ticket::class);
-	}
+    public function ticket_messages()
+    {
+        return $this->hasMany(TicketMessage::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }
